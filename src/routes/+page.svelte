@@ -1,5 +1,7 @@
 <script>
-	import Sidebar from "../components/layout/Sidebar.svelte";
+	import About from '../components/sections/About.svelte';
+	import Home from '../components/sections/Home.svelte';
 </script>
 
-<Sidebar/>
+<Home />
+<About/>
