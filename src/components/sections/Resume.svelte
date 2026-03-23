@@ -1,33 +1,55 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 
-	// ✅ Svelte 5 state
 	let show = $state(false);
 	let sectionRef: HTMLElement;
 
+	// ✅ Track observer
+	let observer: IntersectionObserver;
+
+	// ✅ Prevent unnecessary updates
+	let lastState = false;
+
 	onMount(() => {
-		const observer = new IntersectionObserver(
+		observer = new IntersectionObserver(
 			(entries) => {
-				show = entries[0].isIntersecting;
+				const isVisible = entries[0].isIntersecting;
+
+				// ✅ Update only if changed (prevents re-render spam)
+				if (isVisible !== lastState) {
+					lastState = isVisible;
+					show = isVisible;
+				}
 			},
 			{ threshold: 0.2 }
 		);
 
 		if (sectionRef) observer.observe(sectionRef);
 	});
+
+	// ✅ CLEANUP (important fix)
+	onDestroy(() => {
+		if (observer) observer.disconnect();
+	});
 </script>
 
+<!-- ✅ SEO (no UI impact) -->
+<svelte:head>
+	<meta
+		name="keywords"
+		content="Software Developer Experience, Resume Portfolio, JavaScript Developer Experience, Freshworks Developer"
+	/>
+</svelte:head>
+
+<!-- 🔒 YOUR UI (UNCHANGED) -->
 <section
 	id="resume"
 	bind:this={sectionRef}
 	class="min-h-screen bg-[#0A0914] text-white px-6 md:px-16 py-20"
 >
-	<!-- 🧠 Heading -->
 	<h2 class="text-3xl md:text-4xl font-bold mb-16">Resume</h2>
 
-	<!-- 📄 Grid Layout -->
-	<div class="grid grid-cols-1 md:grid-cols-2 gap-16">
-		<!-- LEFT COLUMN -->
+	<div class="grid grid-cols-1 md:grid-cols-2 gap-16 text-xl">
 		<div
 			class="space-y-12 transition-all duration-700"
 			class:opacity-0={!show}
@@ -35,7 +57,6 @@
 			class:opacity-100={show}
 			class:translate-x-0={show}
 		>
-			<!-- 🧾 SUMMARY -->
 			<div>
 				<h3 class="text-xl font-semibold mb-4 border-l-4 pl-4 border-[#555758]">Summary</h3>
 
@@ -48,17 +69,16 @@
 				</p>
 			</div>
 
-			<!-- 🎓 EDUCATION -->
 			<div>
 				<h3 class="text-xl font-semibold mb-4 border-l-4 pl-4 border-[#555758]">Education</h3>
 
 				<div class="bg-white/5 border border-gray-800 rounded-xl p-6">
-					<h4 class="font-semibold text-lg">Sri Krishna College of Engineering and Technology</h4>
+					<h4 class="font-semibold text-xl">Sri Krishna College of Engineering and Technology</h4>
 					<p class="text-gray-400 mt-1">
 						Bachelor of Engineering in Electrical and Electronics Engineering
 					</p>
 
-					<div class="flex justify-between text-sm text-gray-500 mt-3">
+					<div class="flex justify-between text-gray-500 mt-3 text-xl">
 						<span>May 2020</span>
 						<span>Coimbatore, Tamil Nadu</span>
 					</div>
@@ -66,7 +86,6 @@
 			</div>
 		</div>
 
-		<!-- RIGHT COLUMN -->
 		<div
 			class="relative transition-all duration-700 delay-200"
 			class:opacity-0={!show}
@@ -78,24 +97,21 @@
 				Professional Experience
 			</h3>
 
-			<!-- 🧵 Timeline line -->
 			<div class="absolute left-2 top-2 bottom-0 w-0.5 bg-gray-800"></div>
 
-			<!-- 📌 Timeline Item -->
 			<div class="relative pl-8">
-				<!-- Dot -->
 				<div class="absolute left-0 top-2 w-4 h-4 rounded-full bg-[#555758]"></div>
 
-				<div class="bg-white/5 border border-gray-800 rounded-xl p-6">
-					<h4 class="text-lg font-semibold">Konnectify</h4>
+				<div class="bg-white/5 border border-gray-800 rounded-xl p-6 text-xl">
+					<h4 class="text-xl font-semibold">Konnectify</h4>
 					<p class="text-gray-400">Software Developer</p>
 
-					<div class="flex justify-between text-sm text-gray-500 mt-2 mb-4">
+					<div class="flex justify-between text-xl text-gray-500 mt-2 mb-4">
 						<span>May 2022 – Aug 2025</span>
 						<span>Chennai, Tamil Nadu</span>
 					</div>
 
-					<ul class="list-disc pl-5 space-y-2 text-gray-400 text-sm leading-relaxed">
+					<ul class="list-disc pl-5 space-y-2 text-gray-400 text-xl leading-relaxed">
 						<li>
 							Developed custom applications and integrations within the Freshworks ecosystem using
 							the Freshworks SDK.

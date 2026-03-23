@@ -4,16 +4,27 @@
 
 	let show = $state(false);
 
-	// ✅ Section ref (fixed)
 	let sectionRef: HTMLElement | null = null;
+
+	// ✅ Prevent flicker
+	let lastRevealState = false;
 
 	useReveal(
 		() => sectionRef,
-		() => (show = true),
-		() => (show = false)
+		() => {
+			if (!lastRevealState) {
+				lastRevealState = true;
+				show = true;
+			}
+		},
+		() => {
+			if (lastRevealState) {
+				lastRevealState = false;
+				show = false;
+			}
+		}
 	);
 
-	// ✅ Form state
 	let name = $state('');
 	let email = $state('');
 	let subject = $state('');
@@ -22,9 +33,11 @@
 	let loading = $state(false);
 	let errorMsg = $state('');
 
-	// ✅ Submit handler
 	async function handleSubmit(e: SubmitEvent) {
 		e.preventDefault();
+
+		// ✅ Prevent duplicate submissions
+		if (loading) return;
 
 		loading = true;
 		submitted = false;
@@ -33,18 +46,17 @@
 		try {
 			const res = await fetch('/api/contact', {
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
+				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ name, email, subject, message })
 			});
 
+			// ✅ Safe response handling
+			if (!res.ok) throw new Error('Network error');
+
 			const data = await res.json();
 
-			if (data.success) {
+			if (data?.success) {
 				submitted = true;
-
-				// reset form
 				name = '';
 				email = '';
 				subject = '';
@@ -61,13 +73,22 @@
 	}
 </script>
 
+<!-- ✅ SEO (no UI impact) -->
+<svelte:head>
+	<meta
+		name="keywords"
+		content="Contact Fullstack Developer, Hire MERN Developer India, Freelance Developer Contact"
+	/>
+</svelte:head>
+
 <section
 	id="contact"
 	bind:this={sectionRef}
 	class="min-h-screen bg-[#0A0914] text-white px-6 md:px-16 py-20"
+	aria-labelledby="contact-heading"
 >
-	<!-- 🔥 Heading -->
 	<h2
+		id="contact-heading"
 		class="text-3xl md:text-4xl font-bold mb-12 transition-all duration-700"
 		class:opacity-0={!show}
 		class:-translate-y-10={!show}
@@ -78,7 +99,7 @@
 	</h2>
 
 	<div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-		<!-- LEFT INFO -->
+		<!-- LEFT -->
 		<div
 			class="space-y-6 transition-all duration-700"
 			class:opacity-0={!show}
@@ -87,31 +108,31 @@
 			class:translate-x-0={show}
 		>
 			<div class="flex items-start gap-4 p-5 rounded-xl bg-white/5 border border-gray-800">
-				<Icon icon="lucide:map-pin" class="w-6 h-6 text-[#555758]" />
-				<div>
+				<Icon icon="lucide:map-pin" class="w-8 h-8 text-[#555758]" aria-hidden="true" />
+				<div class="text-xl">
 					<h4 class="font-semibold">Location</h4>
-					<p class="text-gray-400 text-sm">Namakkal, Tamil Nadu, India</p>
+					<p class="text-gray-400 text-base">Namakkal, Tamil Nadu, India</p>
 				</div>
 			</div>
 
 			<div class="flex items-start gap-4 p-5 rounded-xl bg-white/5 border border-gray-800">
-				<Icon icon="lucide:mail" class="w-6 h-6 text-[#555758]" />
-				<div>
+				<Icon icon="lucide:mail" class="w-8 h-8 text-[#555758]" aria-hidden="true" />
+				<div class="text-xl">
 					<h4 class="font-semibold">Email</h4>
-					<p class="text-gray-400 text-sm">nagamanickam@yahoo.com</p>
+					<p class="text-gray-400 text-base">nagamanickam@yahoo.com</p>
 				</div>
 			</div>
 
 			<div class="flex items-start gap-4 p-5 rounded-xl bg-white/5 border border-gray-800">
-				<Icon icon="lucide:phone" class="w-6 h-6 text-[#555758]" />
-				<div>
+				<Icon icon="lucide:phone" class="w-8 h-8 text-[#555758]" aria-hidden="true" />
+				<div class="text-xl">
 					<h4 class="font-semibold">Phone</h4>
-					<p class="text-gray-400 text-sm">+91 9500960553</p>
+					<p class="text-gray-400 text-base">+91 9500960553</p>
 				</div>
 			</div>
 		</div>
 
-		<!-- RIGHT FORM -->
+		<!-- FORM -->
 		<form
 			onsubmit={handleSubmit}
 			class="space-y-6 transition-all duration-700 delay-200"
@@ -119,13 +140,35 @@
 			class:translate-x-10={!show}
 			class:opacity-100={show}
 			class:translate-x-0={show}
+			aria-label="Contact form"
 		>
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-				<input type="text" placeholder="Your Name" bind:value={name} class="input" required />
-				<input type="email" placeholder="Your Email" bind:value={email} class="input" required />
+				<input
+					type="text"
+					placeholder="Your Name"
+					bind:value={name}
+					class="input"
+					required
+					aria-label="Your name"
+				/>
+				<input
+					type="email"
+					placeholder="Your Email"
+					bind:value={email}
+					class="input"
+					required
+					aria-label="Your email"
+				/>
 			</div>
 
-			<input type="text" placeholder="Subject" bind:value={subject} class="input" required />
+			<input
+				type="text"
+				placeholder="Subject"
+				bind:value={subject}
+				class="input"
+				required
+				aria-label="Subject"
+			/>
 
 			<textarea
 				rows="5"
@@ -133,13 +176,13 @@
 				bind:value={message}
 				class="input"
 				required
+				aria-label="Message"
 			></textarea>
 
-			<!-- 🔥 Button with Loader -->
 			<button
 				type="submit"
 				disabled={loading}
-				class="px-6 py-3 rounded-lg font-medium transition flex items-center justify-center gap-2
+				class="px-6 py-3 rounded-lg text-xl font-medium transition flex items-center justify-center gap-2
 				{loading ? 'bg-gray-600 cursor-not-allowed' : 'bg-[#555758] hover:bg-white hover:text-black'}"
 			>
 				{#if loading}
@@ -150,14 +193,12 @@
 				{/if}
 			</button>
 
-			<!-- ✅ Success -->
 			{#if submitted}
-				<p class="text-green-400 text-sm">Message sent successfully ✅</p>
+				<p class="text-green-400 text-sm" role="status">Message sent successfully ✅</p>
 			{/if}
 
-			<!-- ❌ Error -->
 			{#if errorMsg}
-				<p class="text-red-400 text-sm">{errorMsg}</p>
+				<p class="text-red-400 text-sm" role="alert">{errorMsg}</p>
 			{/if}
 		</form>
 	</div>
@@ -177,7 +218,6 @@
 		border-color: #555758;
 	}
 
-	/* 🔄 Loader */
 	.loader {
 		width: 18px;
 		height: 18px;

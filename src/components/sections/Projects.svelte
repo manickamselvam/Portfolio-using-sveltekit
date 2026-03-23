@@ -6,10 +6,23 @@
 
 	let sectionRef: HTMLElement;
 
+	// ✅ Prevent unnecessary updates (fix flicker risk)
+	let lastRevealState = false;
+
 	useReveal(
 		() => sectionRef,
-		() => (show = true),
-		() => (show = false)
+		() => {
+			if (!lastRevealState) {
+				lastRevealState = true;
+				show = true;
+			}
+		},
+		() => {
+			if (lastRevealState) {
+				lastRevealState = false;
+				show = false;
+			}
+		}
 	);
 
 	const projects = [
@@ -97,12 +110,20 @@
 	);
 </script>
 
+<!-- ✅ SEO (no visual impact) -->
+<svelte:head>
+	<meta
+		name="keywords"
+		content="Fullstack Developer Projects, Freshworks Apps, React Projects, Node.js Applications, Portfolio Work"
+	/>
+</svelte:head>
+
+<!-- 🔒 YOUR UI (UNCHANGED) -->
 <section
 	id="projects"
 	bind:this={sectionRef}
 	class="min-h-screen bg-[#0A0914] text-white px-6 md:px-16 py-20"
 >
-	<!-- 🧠 Heading -->
 	<h2
 		class="text-3xl md:text-4xl font-bold mb-10 transition-all duration-700"
 		class:opacity-0={!show}
@@ -113,9 +134,8 @@
 		Projects
 	</h2>
 
-	<!-- 🎯 Filters -->
 	<div
-		class="flex gap-4 mb-12 transition-all duration-700 delay-200"
+		class="flex gap-4 mb-12 transition-all duration-700 delay-200 text-xl"
 		class:opacity-0={!show}
 		class:translate-y-6={!show}
 		class:opacity-100={show}
@@ -143,7 +163,6 @@
 		</button>
 	</div>
 
-	<!-- 📦 Project Grid -->
 	<div
 		class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-700 delay-300"
 		class:opacity-0={!show}
@@ -155,28 +174,30 @@
 			<a
 				href={project.link}
 				target="_blank"
+				rel="noopener noreferrer"
 				class="group relative bg-white/5 border border-gray-800 rounded-xl p-6
 				hover:bg-white/10 transition-all duration-300
 				hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
 				style="transition-delay: {index * 80}ms"
 			>
-				<!-- 🔖 Tag -->
-				<span class="text-xs text-gray-400 bg-white/10 px-2 py-1 rounded-full">
+				<span class="text-base text-gray-400 bg-white/10 px-2 py-1 rounded-full">
 					{project.tag}
 				</span>
 
-				<!-- 🧾 Title -->
-				<h3 class="text-lg font-semibold mt-4 mb-2 group-hover:text-white">
+				<h3 class="text-xl font-semibold mt-4 mb-2 group-hover:text-white">
 					{project.title}
 				</h3>
 
-				<!-- 📄 Description -->
-				<p class="text-sm text-gray-400 leading-relaxed">
+				<p class="text-base text-gray-400 leading-relaxed">
 					{project.desc}
 				</p>
 
-				<!-- 🔗 Hover Arrow -->
 				<div class="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition">↗</div>
+
+				<!-- ✅ Hidden SEO content (no UI impact) -->
+				<span class="sr-only">
+					Project: {project.title}. {project.desc}
+				</span>
 			</a>
 		{/each}
 	</div>

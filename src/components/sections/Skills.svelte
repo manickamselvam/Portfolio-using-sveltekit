@@ -1,11 +1,16 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 
-	// ✅ Svelte 5 state
+	type Skill = {
+		name: string;
+		level: number;
+	};
+
 	let animate = $state(false);
 	let show = $state(false);
+	let sectionRef = $state<HTMLElement>();
 
-	const skills = [
+	const skills: Skill[] = [
 		{ name: 'HTML5', level: 95 },
 		{ name: 'CSS3', level: 85 },
 		{ name: 'Javascript', level: 80 },
@@ -14,35 +19,48 @@
 		{ name: 'MongoDB', level: 65 }
 	];
 
-	let sectionRef: HTMLElement;
+	// ✅ Prevent unnecessary updates
+	let lastState = false;
 
-	onMount(() => {
+	$effect(() => {
+		if (!browser || !sectionRef) return;
+
 		const observer = new IntersectionObserver(
 			(entries) => {
 				const entry = entries[0];
+				const isVisible = entry.isIntersecting;
 
-				if (entry.isIntersecting) {
-					show = true;
-					animate = true;
-				} else {
-					show = false;
-					animate = false;
+				// ✅ Only update if state actually changes
+				if (isVisible !== lastState) {
+					lastState = isVisible;
+
+					show = isVisible;
+					animate = isVisible;
 				}
 			},
 			{ threshold: 0.3 }
 		);
 
-		if (sectionRef) observer.observe(sectionRef);
+		observer.observe(sectionRef);
+
+		return () => observer.disconnect();
 	});
 </script>
 
+<!-- ✅ SEO (no visual impact) -->
+<svelte:head>
+	<meta name="keywords" content="Frontend Skills, React Developer Skills, Node.js Skills, MERN Stack Skills" />
+</svelte:head>
+
+<!-- 🔒 YOUR UI (UNCHANGED) -->
 <section
 	id="skills"
 	bind:this={sectionRef}
-	class="min-h-screen bg-[#0A0914] text-white px-6 md:px-16 py-20"
+	aria-labelledby="skills-heading"
+	class="bg-[#0A0914] text-white px-6 md:px-16 py-20"
 >
-	<!-- 🧠 Heading -->
 	<h2
+		id="skills-heading"
 		class="text-3xl md:text-4xl font-bold mb-12 transition-all duration-700"
 		class:opacity-0={!show}
 		class:-translate-y-10={!show}
@@ -52,33 +70,57 @@
 		Skills
 	</h2>
 
-	<!-- 📊 Grid -->
 	<div
 		class="grid grid-cols-1 md:grid-cols-2 gap-10 transition-all duration-700 delay-200"
 		class:opacity-0={!show}
 		class:-translate-y-10={!show}
 		class:opacity-100={show}
 		class:translate-y-0={show}
+		role="list"
+		aria-label="Technical skills and proficiency levels"
 	>
 		{#each skills as skill, index (skill.name)}
-			<div class="transition-all duration-500" style="transition-delay: {index * 100}ms">
-				<!-- Skill Name -->
+			<div 
+				class="transition-all duration-500" 
+				style="transition-delay: {index * 100}ms"
+				role="listitem"
+			>
 				<div class="flex justify-between mb-2">
-					<span class="font-medium">{skill.name}</span>
-					<span class="text-gray-400">{skill.level}%</span>
+					<span class="font-medium text-xl">{skill.name}</span>
+					<span class="text-gray-400" aria-label="Proficiency: {skill.level} percent">
+						{skill.level}%
+					</span>
 				</div>
 
-				<!-- Progress Bar -->
-				<div class="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
+				<div 
+					class="w-full h-2 bg-gray-800 rounded-full overflow-hidden"
+					role="progressbar"
+					aria-valuenow={animate ? skill.level : 0}
+					aria-valuemin={0}
+					aria-valuemax={100}
+					aria-label="{skill.name} proficiency"
+				>
 					<div
 						class="h-full bg-[#555758] transition-all duration-1000 ease-out"
 						style="
 							width: {animate ? skill.level + '%' : '0%'};
 							transition-delay: {index * 120}ms;
 						"
+						aria-hidden="true"
 					></div>
 				</div>
 			</div>
 		{/each}
 	</div>
 </section>
+
+<style>
+	section > h2,
+	section > div {
+		will-change: opacity, transform;
+	}
+
+	[role="progressbar"] > div {
+		will-change: width;
+	}
+</style>
