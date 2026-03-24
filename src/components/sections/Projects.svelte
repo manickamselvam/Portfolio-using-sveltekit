@@ -6,7 +6,6 @@
 
 	let sectionRef: HTMLElement;
 
-	// ✅ Prevent unnecessary updates (fix flicker risk)
 	let lastRevealState = false;
 
 	useReveal(
@@ -110,22 +109,14 @@
 	);
 </script>
 
-<!-- ✅ SEO (no visual impact) -->
-<svelte:head>
-	<meta
-		name="keywords"
-		content="Fullstack Developer Projects, Freshworks Apps, React Projects, Node.js Applications, Portfolio Work"
-	/>
-</svelte:head>
-
-<!-- 🔒 YOUR UI (UNCHANGED) -->
 <section
 	id="projects"
 	bind:this={sectionRef}
-	class="min-h-screen bg-[#0A0914] text-white px-6 md:px-16 py-20"
+	class="min-h-screen bg-[#0A0914] text-white px-4 sm:px-6 md:px-16 py-16 sm:py-20"
 >
+	<!-- Heading -->
 	<h2
-		class="text-3xl md:text-4xl font-bold mb-10 transition-all duration-700"
+		class="text-2xl sm:text-3xl md:text-4xl font-bold mb-8 sm:mb-10 transition-all duration-700"
 		class:opacity-0={!show}
 		class:-translate-y-10={!show}
 		class:opacity-100={show}
@@ -134,8 +125,9 @@
 		Projects
 	</h2>
 
+	<!-- ✅ FILTER BUTTONS (SCROLLABLE ON MOBILE) -->
 	<div
-		class="flex gap-4 mb-12 transition-all duration-700 delay-200 text-xl"
+		class="flex gap-3 sm:gap-4 mb-10 sm:mb-12 overflow-x-auto no-scrollbar transition-all duration-700 delay-200 text-sm sm:text-base md:text-xl"
 		class:opacity-0={!show}
 		class:translate-y-6={!show}
 		class:opacity-100={show}
@@ -143,28 +135,29 @@
 	>
 		<button
 			onclick={() => (activeFilter = 'all')}
-			class="px-4 py-2 rounded-full border border-gray-700 hover:bg-white/10"
+			class="whitespace-nowrap px-3 sm:px-4 py-2 rounded-full border border-gray-700 hover:bg-white/10"
 		>
 			All
 		</button>
 
 		<button
 			onclick={() => (activeFilter = 'website')}
-			class="px-4 py-2 rounded-full border border-gray-700 hover:bg-white/10"
+			class="whitespace-nowrap px-3 sm:px-4 py-2 rounded-full border border-gray-700 hover:bg-white/10"
 		>
 			Website
 		</button>
 
 		<button
 			onclick={() => (activeFilter = 'app')}
-			class="px-4 py-2 rounded-full border border-gray-700 hover:bg-white/10"
+			class="whitespace-nowrap px-3 sm:px-4 py-2 rounded-full border border-gray-700 hover:bg-white/10"
 		>
 			Freshworks Apps
 		</button>
 	</div>
 
+	<!-- ✅ GRID -->
 	<div
-		class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-700 delay-300"
+		class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 transition-all duration-700 delay-300"
 		class:opacity-0={!show}
 		class:translate-y-10={!show}
 		class:opacity-100={show}
@@ -175,26 +168,25 @@
 				href={project.link}
 				target="_blank"
 				rel="noopener noreferrer"
-				class="group relative bg-white/5 border border-gray-800 rounded-xl p-6
+				class="group relative bg-white/5 border border-gray-800 rounded-xl p-5 sm:p-6
 				hover:bg-white/10 transition-all duration-300
 				hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
 				style="transition-delay: {index * 80}ms"
 			>
-				<span class="text-base text-gray-400 bg-white/10 px-2 py-1 rounded-full">
+				<span class="text-xs sm:text-sm text-gray-400 bg-white/10 px-2 py-1 rounded-full">
 					{project.tag}
 				</span>
 
-				<h3 class="text-xl font-semibold mt-4 mb-2 group-hover:text-white">
+				<h3 class="text-lg sm:text-xl font-semibold mt-3 sm:mt-4 mb-2 group-hover:text-white">
 					{project.title}
 				</h3>
 
-				<p class="text-base text-gray-400 leading-relaxed">
+				<p class="text-sm sm:text-base text-gray-400 leading-relaxed">
 					{project.desc}
 				</p>
 
 				<div class="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition">↗</div>
 
-				<!-- ✅ Hidden SEO content (no UI impact) -->
 				<span class="sr-only">
 					Project: {project.title}. {project.desc}
 				</span>
@@ -202,3 +194,14 @@
 		{/each}
 	</div>
 </section>
+
+<style>
+	/* hide scrollbar for mobile filter row */
+	.no-scrollbar::-webkit-scrollbar {
+		display: none;
+	}
+	.no-scrollbar {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+</style>

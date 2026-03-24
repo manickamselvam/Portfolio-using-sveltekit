@@ -5,7 +5,6 @@
 	let show = $state(false);
 	let sectionRef: HTMLElement;
 
-	// ✅ Prevent unnecessary state updates
 	let lastRevealState = false;
 
 	useReveal(
@@ -58,7 +57,6 @@
 	];
 </script>
 
-<!-- ✅ SEO (no UI impact) -->
 <svelte:head>
 	<meta
 		name="keywords"
@@ -66,16 +64,15 @@
 	/>
 </svelte:head>
 
-<!-- 🔒 YOUR UI (UNCHANGED) -->
 <section
 	id="services"
 	bind:this={sectionRef}
-	class="min-h-screen bg-[#0A0914] text-white px-6 md:px-16 py-20"
+	class="min-h-screen bg-[#0A0914] text-white px-4 sm:px-6 md:px-16 py-16 sm:py-20"
 	aria-labelledby="services-heading"
 >
 	<h2
 		id="services-heading"
-		class="text-3xl md:text-4xl font-bold mb-12 transition-all duration-700"
+		class="text-2xl sm:text-3xl md:text-4xl font-bold mb-8 sm:mb-12 transition-all duration-700"
 		class:opacity-0={!show}
 		class:-translate-y-10={!show}
 		class:opacity-100={show}
@@ -85,7 +82,7 @@
 	</h2>
 
 	<div
-		class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-700 delay-200"
+		class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 transition-all duration-700 delay-200"
 		class:opacity-0={!show}
 		class:translate-y-10={!show}
 		class:opacity-100={show}
@@ -95,25 +92,27 @@
 	>
 		{#each services as service, index (service.title)}
 			<div
-				class="group bg-white/5 border border-gray-800 rounded-xl p-6
+				class="group bg-white/5 border border-gray-800 rounded-xl p-5 sm:p-6
 				transition-all duration-300 hover:-translate-y-2 hover:bg-white/10
 				hover:shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
 				style="transition-delay: {index * 100}ms"
 				role="listitem"
 			>
-				<div class="mb-4 text-[#555758] group-hover:text-white transition">
-					<Icon icon={service.icon} class="w-8 h-8" aria-hidden="true" />
+				<!-- Icon -->
+				<div class="mb-3 sm:mb-4 text-[#555758] group-hover:text-white transition">
+					<Icon icon={service.icon} class="w-6 h-6 sm:w-8 sm:h-8" aria-hidden="true" />
 				</div>
 
-				<h3 class="text-xl font-semibold mb-2">
+				<!-- Title -->
+				<h3 class="text-lg sm:text-xl font-semibold mb-2">
 					{service.title}
 				</h3>
 
-				<p class="text-gray-400 text-base leading-relaxed">
+				<!-- Description -->
+				<p class="text-sm sm:text-base text-gray-400 leading-relaxed">
 					{service.desc}
 				</p>
 
-				<!-- ✅ Hidden SEO boost -->
 				<span class="sr-only">
 					Service: {service.title}. {service.desc}
 				</span>

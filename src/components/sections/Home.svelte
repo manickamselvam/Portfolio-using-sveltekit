@@ -14,7 +14,6 @@
 	let isPaused = $state(false);
 	let show = $state(false);
 
-	// ✅ Track timers (FIX)
 	let timers: ReturnType<typeof setTimeout>[] = [];
 
 	function safeTimeout(fn: () => void, delay: number) {
@@ -42,7 +41,10 @@
 			}
 
 			safeTimeout(typeEffect, 100);
-		} else if (isDeleting && charIndex >= 0) {
+			return;
+		}
+
+		if (isDeleting && charIndex >= 0) {
 			displayText = currentRole.slice(0, charIndex);
 			charIndex--;
 
@@ -55,37 +57,40 @@
 			}
 
 			safeTimeout(typeEffect, 50);
-		} else {
-			isDeleting = true;
-			safeTimeout(typeEffect, 50);
+			return;
 		}
+
+		isDeleting = true;
+		safeTimeout(typeEffect, 50);
 	}
 
 	onMount(() => {
 		typeEffect();
 
-		// same animation trigger (UNCHANGED)
 		safeTimeout(() => {
 			show = true;
 		}, 100);
 	});
 
-	// ✅ CLEANUP (this was missing — FIXES BREAK ISSUES)
 	onDestroy(() => {
 		timers.forEach(clearTimeout);
+		timers = [];
 	});
 </script>
 
-<!-- ✅ SEO (safe, no behavior impact) -->
 <svelte:head>
-	<meta name="keywords" content="Fullstack Developer, MERN Stack Developer, React Developer, Freelancer India" />
+	<meta
+		name="keywords"
+		content="Fullstack Developer, MERN Stack Developer, React Developer, Node.js Developer, Freelancer India"
+	/>
 </svelte:head>
 
-<!-- 🔒 YOUR UI (UNCHANGED) -->
+<!-- ✅ RESPONSIVE IMPROVED -->
 <section
 	id="home"
-	class="relative h-screen w-full flex items-center justify-start text-left text-white overflow-hidden"
+	class="relative min-h-screen w-full flex items-center justify-center md:justify-start text-center md:text-left text-white overflow-hidden"
 >
+	<!-- Background -->
 	<div
 		class="absolute inset-0 bg-cover bg-center scale-105 transition-transform duration-2000"
 		class:scale-105={!show}
@@ -93,30 +98,44 @@
 		style="background-image: url('/hero-image.jpg');"
 	></div>
 
+	<!-- Overlay -->
 	<div class="absolute inset-0 bg-black/80"></div>
 
+	<!-- Content -->
 	<div
-		class="relative z-10 px-10 md:px-20 transition-all duration-700"
+		class="relative z-10 
+		px-4 sm:px-6 md:px-12 lg:px-20 
+		max-w-4xl
+		transition-all duration-700"
 		class:opacity-0={!show}
 		class:translate-y-10={!show}
 		class:opacity-100={show}
 		class:translate-y-0={show}
 	>
-		<h1 class="text-4xl md:text-6xl font-bold mb-4">
+		<h1
+			class="font-bold mb-4
+			text-3xl sm:text-4xl md:text-5xl lg:text-6xl"
+		>
 			Nagamanickam S
 		</h1>
 
-		<p class="text-lg md:text-2xl text-gray-300">
+		<p
+			class="text-gray-300
+			text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed"
+		>
 			I'm a
-			<span class="text-white font-semibold ml-1">
+			<span
+				class="text-white font-semibold ml-1 wrap-break-word"
+				aria-live="polite"
+			>
 				{displayText}
 			</span>
 			<span class="cursor"></span>
 		</p>
 
-		<!-- ✅ SEO boost (invisible) -->
 		<p class="sr-only">
-			Nagamanickam S is a Fullstack Developer, Freelancer, and Freshworks Marketplace App Developer specializing in React, Node.js, and MERN stack.
+			Nagamanickam S is a Fullstack Developer, Freelancer, and Freshworks Marketplace App Developer
+			specializing in React, Node.js, and MERN stack.
 		</p>
 	</div>
 </section>
@@ -133,7 +152,11 @@
 	}
 
 	@keyframes blink {
-		0%, 50% { opacity: 1; }
-		51%, 100% { opacity: 0; }
+		0%, 50% {
+			opacity: 1;
+		}
+		51%, 100% {
+			opacity: 0;
+		}
 	}
 </style>

@@ -19,7 +19,6 @@
 		{ name: 'MongoDB', level: 65 }
 	];
 
-	// ✅ Prevent unnecessary updates
 	let lastState = false;
 
 	$effect(() => {
@@ -30,10 +29,8 @@
 				const entry = entries[0];
 				const isVisible = entry.isIntersecting;
 
-				// ✅ Only update if state actually changes
 				if (isVisible !== lastState) {
 					lastState = isVisible;
-
 					show = isVisible;
 					animate = isVisible;
 				}
@@ -47,21 +44,23 @@
 	});
 </script>
 
-<!-- ✅ SEO (no visual impact) -->
 <svelte:head>
-	<meta name="keywords" content="Frontend Skills, React Developer Skills, Node.js Skills, MERN Stack Skills" />
+	<meta
+		name="keywords"
+		content="Frontend Skills, React Developer Skills, Node.js Skills, MERN Stack Skills"
+	/>
 </svelte:head>
 
-<!-- 🔒 YOUR UI (UNCHANGED) -->
 <section
 	id="skills"
 	bind:this={sectionRef}
 	aria-labelledby="skills-heading"
-	class="bg-[#0A0914] text-white px-6 md:px-16 py-20"
+	class="bg-[#0A0914] text-white px-4 sm:px-6 md:px-12 lg:px-16 py-16 md:py-20"
 >
+	<!-- Heading -->
 	<h2
 		id="skills-heading"
-		class="text-3xl md:text-4xl font-bold mb-12 transition-all duration-700"
+		class="text-2xl sm:text-3xl md:text-4xl font-bold mb-8 md:mb-12 transition-all duration-700"
 		class:opacity-0={!show}
 		class:-translate-y-10={!show}
 		class:opacity-100={show}
@@ -70,35 +69,42 @@
 		Skills
 	</h2>
 
+	<!-- Grid -->
 	<div
-		class="grid grid-cols-1 md:grid-cols-2 gap-10 transition-all duration-700 delay-200"
+		class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6 sm:gap-8 md:gap-10 transition-all duration-700 delay-200"
 		class:opacity-0={!show}
 		class:-translate-y-10={!show}
 		class:opacity-100={show}
 		class:translate-y-0={show}
 		role="list"
-		aria-label="Technical skills and proficiency levels"
 	>
 		{#each skills as skill, index (skill.name)}
-			<div 
-				class="transition-all duration-500" 
+			<div
+				class="transition-all duration-500"
 				style="transition-delay: {index * 100}ms"
 				role="listitem"
 			>
+				<!-- Skill Header -->
 				<div class="flex justify-between mb-2">
-					<span class="font-medium text-xl">{skill.name}</span>
-					<span class="text-gray-400" aria-label="Proficiency: {skill.level} percent">
+					<span class="font-medium text-base sm:text-lg md:text-xl">
+						{skill.name}
+					</span>
+
+					<span
+						class="text-gray-400 text-sm sm:text-base"
+						aria-label="Proficiency: {skill.level} percent"
+					>
 						{skill.level}%
 					</span>
 				</div>
 
-				<div 
+				<!-- Progress -->
+				<div
 					class="w-full h-2 bg-gray-800 rounded-full overflow-hidden"
 					role="progressbar"
 					aria-valuenow={animate ? skill.level : 0}
 					aria-valuemin={0}
 					aria-valuemax={100}
-					aria-label="{skill.name} proficiency"
 				>
 					<div
 						class="h-full bg-[#555758] transition-all duration-1000 ease-out"
@@ -106,7 +112,6 @@
 							width: {animate ? skill.level + '%' : '0%'};
 							transition-delay: {index * 120}ms;
 						"
-						aria-hidden="true"
 					></div>
 				</div>
 			</div>
@@ -120,7 +125,7 @@
 		will-change: opacity, transform;
 	}
 
-	[role="progressbar"] > div {
+	[role='progressbar'] > div {
 		will-change: width;
 	}
 </style>
