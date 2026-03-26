@@ -29,6 +29,15 @@
 	box-shadow: 0 0 6px rgba(85, 87, 88, 0.6);
 }
 
+@font-face {
+	font-family: 'Satoshi Variable';
+	src: url('$lib/assets/fonts/Satoshi-Variable.ttf') format('truetype');
+	font-weight: 100 900;
+	font-style: normal;
+	font-display: swap;
+}
+
 html {
 	scroll-behavior: smooth;
+	font-family: 'Satoshi Variable';
 }
